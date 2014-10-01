@@ -1,0 +1,16 @@
+# This configuration file will send your MariaDB sql error logs to Splunk Storm.
+# Or other places. Assumes that no other log is using Facility 'local0'.
+
+module(load="imfile" PollingInterval="10")
+
+input(type="imfile"
+        File="/var/log/mysql/sql_error_log"
+        Tag="mariadb-sql-error-log"
+        StateFile="mariadb-security-log"
+        Severity="error"
+        Facility="local0")
+
+local0.* action(type="omfwd"
+       Target="{splunk-address}"
+       Port="{splunk-port}"
+       Protocol="udp")
